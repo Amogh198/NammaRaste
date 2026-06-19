@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DBMS Project Report - Chapter 6: Results</title>
+  <style>
+    /* ACADEMIC FORMATTING SYSTEM (TIMES NEW ROMAN) */
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 1.6;
+      color: #000000;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f6f8;
+    }
+    
+    .page-container {
+      background: #ffffff;
+      width: 21cm;
+      min-height: 29.7cm;
+      padding: 2.54cm; /* Standard 1-inch margins */
+      margin: 30px auto;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      box-sizing: border-box;
+      position: relative;
+    }
+    
+    @media print {
+      body {
+        background-color: #ffffff;
+      }
+      .page-container {
+        margin: 0;
+        box-shadow: none;
+        width: auto;
+        min-height: auto;
+        padding: 0;
+        page-break-after: always;
+      }
+      .no-print {
+        display: none;
+      }
+    }
+
+    .print-instructions {
+      max-width: 21cm;
+      margin: 20px auto 0 auto;
+      background-color: #fffbeb;
+      border: 1px solid #fef3c7;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: Arial, sans-serif;
+      font-size: 10pt;
+      color: #92400e;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .print-instructions h4 {
+      margin: 0 0 5px 0;
+      font-weight: bold;
+    }
+
+    /* TYPOGRAPHY */
+    h1 {
+      font-size: 16pt;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+      margin-top: 0;
+      margin-bottom: 24pt;
+      letter-spacing: 0.5px;
+    }
+    
+    h2 {
+      font-size: 14pt;
+      font-weight: bold;
+      margin-top: 26pt;
+      margin-bottom: 12pt;
+      text-align: left;
+      border-bottom: 1px solid #000;
+      padding-bottom: 4pt;
+    }
+    
+    h3 {
+      font-size: 12pt;
+      font-weight: bold;
+      margin-top: 18pt;
+      margin-bottom: 8pt;
+      font-style: italic;
+    }
+    
+    p {
+      font-size: 12pt;
+      text-align: justify;
+      text-indent: 0.5in; /* Standard paragraph indentation */
+      margin-top: 0;
+      margin-bottom: 10pt;
+    }
+    
+    p.no-indent {
+      text-indent: 0;
+    }
+
+    ol, ul {
+      margin-top: 0;
+      margin-bottom: 10pt;
+      padding-left: 0.5in;
+    }
+
+    li {
+      font-size: 12pt;
+      margin-bottom: 6pt;
+      text-align: justify;
+    }
+
+    /* SCREENSHOT PLACEHOLDER BOXES */
+    .screenshot-container {
+      margin: 18pt 0;
+      text-align: center;
+      page-break-inside: avoid;
+    }
+    
+    .screenshot-box {
+      border: 1.5px dashed #4b5563;
+      background-color: #f9fafb;
+      color: #374151;
+      width: 100%;
+      height: 380px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      box-sizing: border-box;
+      padding: 20px;
+      margin-bottom: 8pt;
+      transition: background-color 0.2s;
+    }
+    
+    .screenshot-box:hover {
+      background-color: #f3f4f6;
+    }
+    
+    .screenshot-title {
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+      font-size: 10.5pt;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+    
+    .screenshot-desc {
+      font-family: Arial, sans-serif;
+      font-size: 9.5pt;
+      color: #6b7280;
+      max-width: 80%;
+      line-height: 1.4;
+      margin-bottom: 12px;
+    }
+
+    .image-tip {
+      font-family: Arial, sans-serif;
+      font-size: 8.5pt;
+      color: #b45309;
+      background-color: #fffbeb;
+      border: 1px solid #fef3c7;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+    
+    .caption {
+      font-size: 11pt;
+      font-style: italic;
+      margin-top: 4pt;
+      margin-bottom: 14pt;
+    }
+
+    /* DATABASE SCHEMA & CODE STYLING */
+    .db-box {
+      background-color: #fafafa;
+      border: 1px solid #d1d5db;
+      padding: 10pt 12pt;
+      margin: 12pt 0;
+      border-radius: 4px;
+      page-break-inside: avoid;
+    }
+
+    .db-title {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 11pt;
+      font-weight: bold;
+      color: #111827;
+      margin-bottom: 6pt;
+      border-bottom: 1px solid #e5e7eb;
+      padding-bottom: 3pt;
+    }
+
+    .sql-code {
+      font-family: "Courier New", Courier, monospace;
+      font-size: 10.5pt;
+      white-space: pre-wrap;
+      color: #1e293b;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14pt 0;
+      page-break-inside: avoid;
+    }
+    
+    th, td {
+      border: 1px solid #000000;
+      padding: 8pt;
+      font-size: 11pt;
+      text-align: left;
+    }
+    
+    th {
+      background-color: #f3f4f6;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- no-print instructions banner -->
+  <div class="print-instructions no-print">
+    <h4>🎓 Student Report Generator - Ready for Copy/Paste or Printing</h4>
+    <p style="margin:0; text-indent:0; font-family: Arial, sans-serif; font-size: 9.5pt; line-height: 1.4;">
+      This page is fully formatted under your university guidelines (<strong>Times New Roman</strong>, Main Headings: <strong>16pt Bold</strong>, Subheadings: <strong>14pt Bold</strong>, Content: <strong>12pt</strong>). 
+      You can open this page in a browser, hit <strong>Ctrl + P</strong> to save it directly as a professional PDF, or copy-paste the text directly into Microsoft Word (all font styles and spacing will be perfectly retained!). 
+      <em>Note: Placeholders are provided below to guide where to paste your screenshots.</em>
+    </p>
+  </div>
+
+  <div class="page-container">
+    
+    <h1>Chapter 6<br>Results and Discussion</h1>
+    
+    <p>This chapter presents the experimental and operational results of the Bruhat Bengaluru Mahanagara Palike (BBMP) Pothole Monitoring System. The implementation validates the database schema design, system constraints, triggers, and aggregated views by linking them to functional user interfaces. The system separates user actions for standard citizens and authorized road contractors to ensure structural integrity and role-based access control. The results demonstrate how real-time geocoding triggers, auto-assignment algorithms, and Service Level Agreement (SLA) calculations operate in a live multi-user environment.</p>
+
+    <h2>6.1 Citizen Complaint Portal (index.html)</h2>
+    
+    <p>The Citizen Complaint Portal serves as the primary public-facing interface, allowing Bengalureans to report potholes directly to the municipal database. The page features a simplified submission form where standard users input their registration details, select a registered road stretch, assign a visual severity score ranging from 1 to 5, and specify coordinate locations. On load, the system computes and displays global real-time indicators, including total registered reports, active outstanding complaints, and aggregate SLA breaches, directly extracted from database queries.</p>
+
+    <div class="screenshot-container">
+      <div class="screenshot-box">
+        <div class="screenshot-title">Figure 6.1: Citizen Complaint Portal Interface</div>
+        <div class="screenshot-desc">
+          Capture the main landing page (index.html) showing the "Report a Pothole" card form on the left, the real-time statistics panel (Total Reports, Open, SLA Breached) at the top, and the "Recent Pothole Reports" table on the right.
+        </div>
+        <span class="image-tip">📸 Paste Citizen Portal Screenshot Here</span>
+      </div>
+      <div class="caption">Figure 6.1: Citizen Complaint Portal and Geo-Registration Page.</div>
+    </div>
+
+    <p>From a DBMS perspective, when a citizen submits a complaint, the database executes an upsert transaction on the <code>citizens</code> table before creating the complaint. It prevents duplication of citizen records by using the customer’s phone number as a unique constraint. If the citizen already exists, their primary key is retrieved; otherwise, a new record is created. The insert query executes as follows:</p>
+
+    <div class="db-box">
+      <div class="db-title">SQL Query - Citizen Upsert and Complaint Registration</div>
+      <pre class="sql-code">-- Step 1: Upsert Citizen Record using unique phone number
+INSERT INTO citizens (full_name, phone) 
+VALUES ('John Doe', '9876543210')
+ON DUPLICATE KEY UPDATE full_name = VALUES(full_name);
+
+-- Step 2: Retrieve Citizen ID
+SELECT citizen_id FROM citizens WHERE phone = '9876543210';
+
+-- Step 3: Insert Complaint (Triggers duplicate detection automatically)
+INSERT INTO complaints (citizen_id, stretch_id, complaint_lat, complaint_lng, severity, description, status)
+VALUES (1, 3, 12.971598, 77.594562, 4, 'Deep pothole near central division crossing', 'open');</pre>
+    </div>
+
+    <p>To ensure high data quality and avoid duplicate maintenance logs, the <code>complaints</code> table implements a specialized spatial trigger named <code>flag_repeat_complaint</code>. Before committing a new complaint, the trigger calculates the geodesic distance between the incoming coordinate pair and all active, unresolved potholes on that specific road stretch using the Spherical Law of Cosines. If a matching active complaint is found within a 100-meter radius, the system automatically flags the new record as a repeat complaint (<code>is_repeat = 1</code>), notifying contractors and avoiding redundant dispatch. The trigger definition is shown below:</p>
+
+    <div class="db-box">
+      <div class="db-title">MySQL Trigger - flag_repeat_complaint (BEFORE INSERT)</div>
+      <pre class="sql-code">DELIMITER //
+CREATE TRIGGER flag_repeat_complaint 
+BEFORE INSERT ON complaints
+FOR EACH ROW
+BEGIN
+    DECLARE nearby_count INT;
+
+    SELECT COUNT(*) INTO nearby_count
+    FROM complaints
+    WHERE stretch_id = NEW.stretch_id
+      AND status != 'resolved'
+      AND (
+          6371000 * ACOS(
+              COS(RADIANS(NEW.complaint_lat)) * COS(RADIANS(complaint_lat)) *
+              COS(RADIANS(complaint_lng) - RADIANS(NEW.complaint_lng)) +
+              SIN(RADIANS(NEW.complaint_lat)) * SIN(RADIANS(complaint_lat))
+          )
+      ) <= 100;
+
+    IF nearby_count > 0 THEN
+        SET NEW.is_repeat = 1;
+    END IF;
+END //
+DELIMITER ;</pre>
+    </div>
+
+    <h2>6.2 Complaints Directory Log (complaints.html)</h2>
+    
+    <p>The Complaints Directory provides a comprehensive, read-only dashboard displaying all reported potholes across the city, organized in reverse chronological order. It is designed to maximize administrative visibility, featuring color-coded visual indicators for pothole severity (ranging from green for level 1 to red for level 5) and status badges representing repair states. Crucially, the customer view strictly enforces read-only access: citizens can search and inspect reported potholes but are restricted from altering status variables, maintaining database security and prevent authorized tampering.</p>
+
+    <div class="screenshot-container">
+      <div class="screenshot-box">
+        <div class="screenshot-title">Figure 6.2: Citywide Complaints Directory Log</div>
+        <div class="screenshot-desc">
+          Capture the complaints.html page showing the complete list of reported potholes, including the status badges (Assigned, In Progress, Resolved) and the disabled status controls, verifying that standard citizens cannot manipulate data.
+        </div>
+        <span class="image-tip">📸 Paste Complaints Directory Screenshot Here</span>
+      </div>
+      <div class="caption">Figure 6.2: Comprehensive Pothole Complaints Log Directory.</div>
+    </div>
+
+    <p>The data rendered in the complaints directory is fetched via an optimized multi-table join that aggregates citizen details, stretch coordinates, administrative ward boundaries, contractor assignments, and resolution deadlines into a single, cohesive view. The SQL query joining these relationships is structured as follows:</p>
+
+    <div class="db-box">
+      <div class="db-title">SQL Query - Aggregated Complaints Fetch</div>
+      <pre class="sql-code">SELECT 
+    c.complaint_id,
+    ci.full_name AS citizen_name,
+    rs.stretch_name,
+    w.ward_name,
+    c.severity,
+    c.status,
+    c.is_repeat,
+    c.description,
+    c.complaint_lat,
+    c.complaint_lng,
+    c.filed_at,
+    con.contractor_name,
+    ra.sla_deadline,
+    ra.resolved_at
+FROM complaints c
+JOIN citizens ci ON c.citizen_id = ci.citizen_id
+JOIN road_stretches rs ON c.stretch_id = rs.stretch_id
+JOIN wards w ON rs.ward_id = w.ward_id
+LEFT JOIN repair_assignments ra ON c.complaint_id = ra.complaint_id
+LEFT JOIN contractors con ON ra.contractor_id = con.contractor_id
+ORDER BY c.filed_at DESC;</pre>
+    </div>
+
+    <h2>6.3 Municipal Public Dashboard (dashboard.html)</h2>
+    
+    <p>The Municipal Public Dashboard provides deep analytical transparency by plotting key performance indicators (KPIs) of BBMP repair operations. It visualizes contractor efficiency ratings, including the total number of work orders assigned, the historical average resolution time in hours, and the count of outstanding SLA breaches. By displaying aggregated metrics, the dashboard holds road contractor agencies accountable and gives citizens a transparent view of the municipal repair status in their respective wards.</p>
+
+    <div class="screenshot-container">
+      <div class="screenshot-box">
+        <div class="screenshot-title">Figure 6.3: Municipal Public Performance Dashboard</div>
+        <div class="screenshot-desc">
+          Capture the dashboard.html page displaying the "Contractor Performance" table (Total Assigned, Average Resolution Time, SLA Breaches), the "Open Complaints by Ward" section, and the "Recent SLA Breach Log" grid.
+        </div>
+        <span class="image-tip">📸 Paste Public Dashboard Screenshot Here</span>
+      </div>
+      <div class="caption">Figure 6.3: Real-Time Performance Analytics Dashboard.</div>
+    </div>
+
+    <p>To reduce backend computing overhead, these metrics are powered directly by pre-compiled database views rather than conducting heavy on-the-fly table scans. The <code>contractor_performance</code> view groups repair logs by contracting firm, calculating the average hours taken to shift status to 'resolved' and tallying occurrences where the current date has surpassed the pre-calculated SLA deadline without a recorded resolution. The view definition is established as follows:</p>
+
+    <div class="db-box">
+      <div class="db-title">SQL View - Contractor Performance Compiler</div>
+      <pre class="sql-code">CREATE VIEW contractor_performance AS 
+SELECT 
+    con.contractor_name,
+    COUNT(ra.assignment_id) AS total_assigned,
+    AVG(TIMESTAMPDIFF(HOUR, ra.assigned_at, ra.resolved_at)) AS avg_resolution_hours,
+    SUM(CASE WHEN (ra.resolved_at IS NULL AND NOW() > ra.sla_deadline) THEN 1 ELSE 0 END) AS sla_breaches
+FROM repair_assignments ra 
+JOIN contractors con ON ra.contractor_id = con.contractor_id
+GROUP BY con.contractor_name;</pre>
+    </div>
+
+    <p>Additionally, the <code>ward_open_complaints</code> view is utilized to display active workloads per administrative ward, allowing city planners to reallocate contractor resources to areas showing excessive backlog. The view aggregates active complaints using the following logic:</p>
+
+    <div class="db-box">
+      <div class="db-title">SQL View - Ward Open Workload Aggregator</div>
+      <pre class="sql-code">CREATE VIEW ward_open_complaints AS 
+SELECT 
+    w.ward_name,
+    COUNT(c.complaint_id) AS open_count
+FROM complaints c 
+JOIN road_stretches rs ON c.stretch_id = rs.stretch_id
+JOIN wards w ON rs.ward_id = w.ward_id
+WHERE c.status != 'resolved'
+GROUP BY w.ward_name;</pre>
+    </div>
+
+    <h2>6.4 Contractor Authentication Panel (login.html)</h2>
+    
+    <p>The Contractor Login interface acts as a gatekeeper to ensure secure role separation, granting access only to authorized repair agencies. Standard contractors must authenticate using their registered contractor name and unique password to access their tasks. Once validated, the database matches the contractor's credentials, retrieves their profile, and restricts the contractor panel to only show complaints within their assigned ward boundaries, maintaining strong data isolation and role boundaries.</p>
+
+    <div class="screenshot-container">
+      <div class="screenshot-box">
+        <div class="screenshot-title">Figure 6.4: Contractor Authentication Gate</div>
+        <div class="screenshot-desc">
+          Capture the login.html page showing the dark-themed contractor login form, illustrating credential fields (Contractor Name and Password) and the yellow "Login" action button.
+        </div>
+        <span class="image-tip">📸 Paste Contractor Login Screenshot Here</span>
+      </div>
+      <div class="caption">Figure 6.4: Contractor Secure Authentication Portal.</div>
+    </div>
+
+    <p>The database matches credentials using parameterized queries on the <code>contractors</code> table. It avoids SQL injection vulnerabilities while verifying identity, extracting the <code>contractor_id</code> and <code>contractor_name</code> values for session persistence on success. The verification query is structured as follows:</p>
+
+    <div class="db-box">
+      <div class="db-title">SQL Query - Contractor Authentication Check</div>
+      <pre class="sql-code">SELECT contractor_id, contractor_name 
+FROM contractors 
+WHERE contractor_name = 'South Division Builders' 
+  AND password = 'password123';</pre>
+    </div>
+
+    <h2>6.5 Contractor Task Management Board (contractor.html)</h2>
+    
+    <p>The Contractor Panel is an operational workspace that lists all active road repair assignments assigned to the logged-in contractor. It provides contractors with critical information, including severity levels and SLA deadlines, alongside a status update menu allowing them to transition a pothole's state. The board also features high-visibility alerts highlighting repeat complaints and SLA breaches. These alerts help contractors prioritize repairs based on public demand and contract obligations.</p>
+
+    <div class="screenshot-container">
+      <div class="screenshot-box">
+        <div class="screenshot-title">Figure 6.5: Contractor Active Assignments and Alerts Panel</div>
+        <div class="screenshot-desc">
+          Capture the contractor.html page for an active contractor, showing red/yellow alert boxes at the top (Alerts of Repeat Messages and SLA Breaches), the "Active Assignments" table, and status drop-down controls in each row.
+        </div>
+        <span class="image-tip">📸 Paste Contractor Dashboard Screenshot Here</span>
+      </div>
+      <div class="caption">Figure 6.5: Contractor Active Task Management and Alerts Panel.</div>
+    </div>
+
+    <p>To populate the contractor panel, the system executes a targeted query to fetch active complaints assigned to the authenticated contractor. A left-join is performed on the <code>repair_assignments</code> table, filtering for records belonging to the contractor's ID. The SQL query is shown below:</p>
+
+    <div class="db-box">
+      <div class="db-title">SQL Query - Contractor Active Assignment List</div>
+      <pre class="sql-code">SELECT 
+    c.complaint_id,
+    ci.full_name AS citizen_name,
+    rs.stretch_name,
+    w.ward_name,
+    c.severity,
+    c.status,
+    c.is_repeat,
+    c.complaint_lat,
+    c.complaint_lng,
+    c.filed_at,
+    ra.sla_deadline
+FROM complaints c
+JOIN citizens ci ON c.citizen_id = ci.citizen_id
+JOIN road_stretches rs ON c.stretch_id = rs.stretch_id
+JOIN wards w ON rs.ward_id = w.ward_id
+JOIN repair_assignments ra ON c.complaint_id = ra.complaint_id
+WHERE ra.contractor_id = 2 -- Dynamic Contractor Session ID
+  AND c.status != 'resolved'
+ORDER BY c.filed_at DESC;</pre>
+    </div>
+
+    <p>The real-time alerts displayed at the top of the contractor board are generated by two separate SQL queries. The first query searches for unresolved complaints marked as repeat reports (<code>is_repeat = 1</code>) on stretches under the contractor's jurisdiction. The second query identifies any outstanding assignments where the current timestamp has surpassed the SLA deadline without a resolution. The queries are defined as follows:</p>
+
+    <div class="db-box">
+      <div class="db-title">SQL Queries - Contractor Specific Alert Pulls</div>
+      <pre class="sql-code">-- Query A: Fetch Unresolved Repeat Reports
+SELECT c.complaint_id, rs.stretch_name, c.is_repeat
+FROM complaints c
+JOIN road_stretches rs ON c.stretch_id = rs.stretch_id
+JOIN repair_assignments ra ON c.complaint_id = ra.complaint_id
+WHERE ra.contractor_id = 2 
+  AND c.is_repeat = 1 
+  AND c.status != 'resolved';
+
+-- Query B: Fetch Outstanding SLA Breaches
+SELECT c.complaint_id, rs.stretch_name, ra.sla_deadline
+FROM complaints c
+JOIN repair_assignments ra ON c.complaint_id = ra.complaint_id
+JOIN road_stretches rs ON c.stretch_id = rs.stretch_id
+WHERE ra.contractor_id = 2 
+  AND ra.sla_deadline < NOW() 
+  AND c.status != 'resolved';</pre>
+    </div>
+
+    <p>To enforce contract compliance, the database utilizes a trigger called <code>check_sla_breach</code>. This trigger is activated after any update in the <code>repair_assignments</code> table. If the repair remains unresolved past its SLA deadline, the trigger automatically logs the breach in the <code>sla_breach_log</code> table for auditing. The trigger definition is shown below:</p>
+
+    <div class="db-box">
+      <div class="db-title">MySQL Trigger - check_sla_breach (AFTER UPDATE)</div>
+      <pre class="sql-code">DELIMITER //
+CREATE TRIGGER check_sla_breach 
+AFTER UPDATE ON repair_assignments
+FOR EACH ROW
+BEGIN
+    IF NEW.resolved_at IS NULL AND NOW() > NEW.sla_deadline THEN
+        INSERT INTO sla_breach_log (
+            assignment_id, complaint_id, contractor_id, sla_deadline
+        )
+        SELECT NEW.assignment_id, NEW.complaint_id, NEW.contractor_id, NEW.sla_deadline
+        WHERE NOT EXISTS (
+            SELECT 1 FROM sla_breach_log
+            WHERE assignment_id = NEW.assignment_id
+        );
+    END IF;
+END //
+DELIMITER ;</pre>
+    </div>
+
+    <h2>6.6 Resolved Complaints History Log (contractor.html)</h2>
+    
+    <p>The Resolved History tab provides a historical record of all successfully closed repairs executed by the contractor. It acts as an audit log, detailing when each complaint was filed, its severity, the SLA deadline, and the resolution status. When a contractor marks a complaint as 'resolved', the database logs the completion timestamp. This removes the complaint from active alert triggers, updates metrics across views, and records the resolution time for future performance reviews.</p>
+
+    <div class="screenshot-container">
+      <div class="screenshot-box">
+        <div class="screenshot-title">Figure 6.6: Contractor Resolved History Logs Tab</div>
+        <div class="screenshot-desc">
+          Capture the contractor.html page with the "Resolved History" section activated, displaying the list of successfully resolved complaints, color-coded green status badges, and completed work orders.
+        </div>
+        <span class="image-tip">📸 Paste Resolved History Tab Screenshot Here</span>
+      </div>
+      <div class="caption">Figure 6.6: Historical Record of Resolved Pothole Work Orders.</div>
+    </div>
+
+    <p>Shifting a complaint's status to 'resolved' triggers a multi-table database transaction. The system first updates the status column in the <code>complaints</code> table and then sets the <code>resolved_at</code> column to the current timestamp (<code>NOW()</code>) in the <code>repair_assignments</code> table. The transaction statements execute as follows:</p>
+
+    <div class="db-box">
+      <div class="db-title">SQL Transactions - Complaint Resolution Commits</div>
+      <pre class="sql-code">-- Step 1: Update Complaint Status to Resolved
+UPDATE complaints 
+SET status = 'resolved' 
+WHERE complaint_id = 4;
+
+-- Step 2: Log Resolution Timestamp in Assignments
+UPDATE repair_assignments 
+SET resolved_at = NOW() 
+WHERE complaint_id = 4;</pre>
+    </div>
+
+    <h2>6.7 Summary of Operational Database Verifications</h2>
+    
+    <p>The operational tests demonstrate that the BBMP Pothole Monitoring System functions as a robust database-driven web application. By binding MySQL constraints, triggers, and views directly to frontend API endpoints, the application ensures high data integrity and performance. Standard citizens successfully file reports, which are geocoded and assigned to contractors based on ward associations, while contractors manage tasks and resolve complaints securely within their assigned jurisdictions. The results confirm that all database engines, relational schemas, constraints, and triggers operate as intended under standard operational workloads.</p>
+
+  </div>
+</body>
+</html>

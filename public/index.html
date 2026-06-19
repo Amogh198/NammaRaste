@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BBMP Pothole Report</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --amber: #f59e0b;
+      --amber-dim: #92400e;
+      --red: #ef4444;
+      --green: #22c55e;
+      --text: #e5e5e5;
+      --muted: #6b7280;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; min-height: 100vh; }
+
+    /* NAV */
+    nav {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; color: var(--amber); letter-spacing: 2px; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.85rem;
+      font-family: 'DM Mono', monospace; letter-spacing: 1px;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--amber); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #1a1200 0%, #0d0d0d 60%);
+      border-bottom: 1px solid var(--border);
+      padding: 3rem 2rem 2.5rem;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: 'BBMP';
+      position: absolute; right: -1rem; top: -1rem;
+      font-family: 'Bebas Neue', sans-serif; font-size: 12rem;
+      color: rgba(245,158,11,0.04); pointer-events: none; line-height: 1;
+    }
+    .hero h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; color: var(--amber); letter-spacing: 3px; line-height: 1; }
+    .hero p { color: var(--muted); font-size: 0.9rem; margin-top: 0.5rem; font-family: 'DM Mono', monospace; }
+    .hero-stats { display: flex; gap: 2rem; margin-top: 1.5rem; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--amber); }
+    .stat-label { font-size: 0.7rem; color: var(--muted); font-family: 'DM Mono', monospace; letter-spacing: 1px; }
+
+    /* MAIN LAYOUT */
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+
+    /* CARDS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1.5rem;
+    }
+    .card-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.2rem; letter-spacing: 2px;
+      color: var(--amber); margin-bottom: 1.2rem;
+      padding-bottom: 0.8rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* FORM */
+    .form-group { margin-bottom: 1rem; }
+    label { display: block; font-size: 0.75rem; font-family: 'DM Mono', monospace; color: var(--muted); letter-spacing: 1px; margin-bottom: 0.4rem; }
+    input, select, textarea {
+      width: 100%; background: #1f1f1f; border: 1px solid var(--border);
+      color: var(--text); padding: 0.6rem 0.8rem; border-radius: 3px;
+      font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--amber); }
+    textarea { resize: vertical; min-height: 80px; }
+    select option { background: #1f1f1f; }
+
+    .severity-row { display: flex; gap: 0.5rem; }
+    .sev-btn {
+      flex: 1; padding: 0.5rem; background: #1f1f1f;
+      border: 1px solid var(--border); border-radius: 3px;
+      color: var(--muted); cursor: pointer; font-family: 'DM Mono', monospace;
+      font-size: 0.85rem; transition: all 0.15s; text-align: center;
+    }
+    .sev-btn:hover { border-color: var(--amber); color: var(--amber); }
+    .sev-btn.active { background: var(--amber); border-color: var(--amber); color: #000; font-weight: bold; }
+
+    .loc-row { display: flex; gap: 0.5rem; }
+    .loc-row input { flex: 1; }
+    .loc-btn {
+      background: #1f1f1f; border: 1px solid var(--amber);
+      color: var(--amber); padding: 0.6rem 0.8rem; border-radius: 3px;
+      cursor: pointer; font-size: 0.8rem; font-family: 'DM Mono', monospace;
+      white-space: nowrap; transition: all 0.2s;
+    }
+    .loc-btn:hover { background: var(--amber); color: #000; }
+
+    .submit-btn {
+      width: 100%; background: var(--amber); color: #000;
+      border: none; padding: 0.9rem; border-radius: 3px;
+      font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem;
+      letter-spacing: 2px; cursor: pointer; margin-top: 0.5rem;
+      transition: opacity 0.2s;
+    }
+    .submit-btn:hover { opacity: 0.9; }
+
+    /* RECENT TABLE */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+    th { font-family: 'DM Mono', monospace; font-size: 0.7rem; letter-spacing: 1px;
+         color: var(--muted); padding: 0.5rem 0.75rem; text-align: left;
+         border-bottom: 1px solid var(--border); }
+    td { padding: 0.6rem 0.75rem; border-bottom: 1px solid #1e1e1e; vertical-align: middle; }
+    tr:hover td { background: #1a1a1a; }
+
+    .badge {
+      display: inline-block; padding: 0.2rem 0.5rem; border-radius: 2px;
+      font-size: 0.7rem; font-family: 'DM Mono', monospace; letter-spacing: 0.5px;
+    }
+    .badge-open { background: rgba(245,158,11,0.15); color: var(--amber); }
+    .badge-assigned { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .badge-inprogress { background: rgba(139,92,246,0.15); color: #a78bfa; }
+    .badge-resolved { background: rgba(34,197,94,0.15); color: var(--green); }
+
+    .sev-dot {
+      display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
+    }
+    .sev-1 { background: #22c55e; } .sev-2 { background: #84cc16; }
+    .sev-3 { background: #f59e0b; } .sev-4 { background: #f97316; }
+    .sev-5 { background: #ef4444; }
+
+    .repeat-tag {
+      background: rgba(239,68,68,0.15); color: var(--red);
+      font-size: 0.65rem; padding: 0.1rem 0.3rem; border-radius: 2px;
+      font-family: 'DM Mono', monospace; margin-left: 4px;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--surface); border: 1px solid var(--green);
+      color: var(--green); padding: 1rem 1.5rem; border-radius: 4px;
+      font-family: 'DM Mono', monospace; font-size: 0.85rem;
+      display: none; z-index: 999; animation: slideUp 0.3s ease;
+    }
+    @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    /* WARD STATS */
+    .ward-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 0.75rem; }
+    .ward-card {
+      background: #1a1a1a; border: 1px solid var(--border); border-radius: 3px;
+      padding: 0.75rem; text-align: center;
+    }
+    .ward-count { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--amber); }
+    .ward-name { font-size: 0.75rem; color: var(--muted); font-family: 'DM Mono', monospace; }
+
+    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">⚠ POTHOLE WATCH</div>
+  <div class="nav-links">
+    <a href="index.html" class="active">REPORT</a>
+    <a href="complaints.html">COMPLAINTS</a>
+    <a href="dashboard.html">DASHBOARD</a>
+    <a href="login.html" style="border:1px solid var(--amber); padding:0.2rem 0.5rem; border-radius:2px; margin-left:1rem;">CONTRACTOR LOGIN</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1>REPORT A POTHOLE</h1>
+  <p>// BBMP Ward Complaint Management System — Bengaluru</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num" id="total-count">—</div><div class="stat-label">TOTAL REPORTS</div></div>
+    <div class="stat"><div class="stat-num" id="open-count">—</div><div class="stat-label">OPEN</div></div>
+    <div class="stat"><div class="stat-num" id="breach-count">—</div><div class="stat-label">SLA BREACHED</div></div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="grid">
+
+    <!-- COMPLAINT FORM -->
+    <div class="card">
+      <div class="card-title">FILE COMPLAINT</div>
+
+      <div class="form-group">
+        <label>YOUR NAME</label>
+        <input type="text" id="citizen-name" placeholder="Full name" />
+      </div>
+      <div class="form-group">
+        <label>PHONE NUMBER</label>
+        <input type="text" id="phone" placeholder="10-digit mobile number" />
+      </div>
+      <div class="form-group">
+        <label>ROAD STRETCH</label>
+        <select id="stretch-select">
+          <option value="">-- Select stretch --</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>LOCATION (LAT, LNG)</label>
+        <div class="loc-row">
+          <input type="number" id="lat" placeholder="Latitude" step="0.000001" />
+          <input type="number" id="lng" placeholder="Longitude" step="0.000001" />
+          <button class="loc-btn" onclick="getLocation()">📍 AUTO</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>SEVERITY (1 = Minor, 5 = Critical)</label>
+        <div class="severity-row" id="sev-row">
+          <div class="sev-btn" onclick="setSev(1)">1</div>
+          <div class="sev-btn" onclick="setSev(2)">2</div>
+          <div class="sev-btn" onclick="setSev(3)">3</div>
+          <div class="sev-btn" onclick="setSev(4)">4</div>
+          <div class="sev-btn" onclick="setSev(5)">5</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>DESCRIPTION</label>
+        <textarea id="description" placeholder="Describe the pothole — size, location details, hazard..."></textarea>
+      </div>
+      <button class="submit-btn" onclick="submitComplaint()">SUBMIT COMPLAINT →</button>
+    </div>
+
+    <!-- WARD STATS + RECENT -->
+    <div>
+      <div class="card" style="margin-bottom:1.5rem;">
+        <div class="card-title">WARD — OPEN COMPLAINTS</div>
+        <div class="ward-grid" id="ward-grid">
+          <div style="color:var(--muted); font-size:0.8rem;">Loading...</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">RECENT COMPLAINTS</div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>ID</th><th>STRETCH</th><th>SEV</th><th>STATUS</th></tr>
+            </thead>
+            <tbody id="recent-tbody">
+              <tr><td colspan="4" style="color:var(--muted); text-align:center; padding:1rem;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  let selectedSev = null;
+
+  function setSev(n) {
+    selectedSev = n;
+    document.querySelectorAll('.sev-btn').forEach((b, i) => {
+      b.classList.toggle('active', i + 1 === n);
+    });
+  }
+
+  function getLocation() {
+    if (!navigator.geolocation) return alert('Geolocation not supported');
+    navigator.geolocation.getCurrentPosition(pos => {
+      document.getElementById('lat').value = pos.coords.latitude.toFixed(6);
+      document.getElementById('lng').value = pos.coords.longitude.toFixed(6);
+      showToast('📍 Location captured!');
+    }, () => alert('Location access denied'));
+  }
+
+  function showToast(msg, error = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.borderColor = error ? '#ef4444' : '#22c55e';
+    t.style.color = error ? '#ef4444' : '#22c55e';
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  async function loadStretches() {
+    const res = await fetch('/api/stretches');
+    const data = await res.json();
+    const sel = document.getElementById('stretch-select');
+    data.forEach(s => {
+      const o = document.createElement('option');
+      o.value = s.stretch_id;
+      o.textContent = `${s.stretch_name} (${s.ward_name})`;
+      o.dataset.lat = s.start_lat;
+      o.dataset.lng = s.start_lng;
+      sel.appendChild(o);
+    });
+    sel.addEventListener('change', () => {
+      const opt = sel.options[sel.selectedIndex];
+      if (opt.dataset.lat) {
+        document.getElementById('lat').value = opt.dataset.lat;
+        document.getElementById('lng').value = opt.dataset.lng;
+      }
+    });
+  }
+
+  async function loadRecent() {
+    const res = await fetch('/api/complaints');
+    const data = await res.json();
+    const tbody = document.getElementById('recent-tbody');
+    const recent = data.slice(0, 6);
+    tbody.innerHTML = recent.map(c => `
+      <tr>
+        <td style="font-family:'DM Mono',monospace; color:var(--muted)">#${c.complaint_id}</td>
+        <td>${c.stretch_name} ${c.is_repeat ? '<span class="repeat-tag">REPEAT</span>' : ''}</td>
+        <td><span class="sev-dot sev-${c.severity}"></span>${c.severity}</td>
+        <td><span class="badge badge-${c.status.replace('_','')}${c.status === 'in_progress' ? 'inprogress' : ''}">${c.status.toUpperCase()}</span></td>
+      </tr>
+    `).join('');
+
+    document.getElementById('total-count').textContent = data.length;
+    document.getElementById('open-count').textContent = data.filter(c => c.status === 'open' || c.status === 'assigned').length;
+  }
+
+  async function loadWardStats() {
+    const res = await fetch('/api/ward-stats');
+    const data = await res.json();
+    const grid = document.getElementById('ward-grid');
+    grid.innerHTML = data.map(w => `
+      <div class="ward-card">
+        <div class="ward-count">${w.open_count}</div>
+        <div class="ward-name">${w.ward_name}</div>
+      </div>
+    `).join('');
+  }
+
+  async function loadBreachCount() {
+    const res = await fetch('/api/breaches');
+    const data = await res.json();
+    document.getElementById('breach-count').textContent = data.length;
+  }
+
+  async function submitComplaint() {
+    const name = document.getElementById('citizen-name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const stretch_id = document.getElementById('stretch-select').value;
+    const lat = document.getElementById('lat').value;
+    const lng = document.getElementById('lng').value;
+    const description = document.getElementById('description').value.trim();
+
+    if (!name || !phone || !stretch_id || !lat || !lng || !selectedSev) {
+      showToast('⚠ Fill all fields and select severity', true);
+      return;
+    }
+
+    const res = await fetch('/api/complaints', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ citizen_name: name, phone, stretch_id, lat, lng, severity: selectedSev, description })
+    });
+    const data = await res.json();
+
+    if (data.success) {
+      showToast(`✅ Complaint #${data.complaint_id} filed — ${data.assigned ? 'contractor assigned' : 'pending assignment'}`);
+      document.getElementById('citizen-name').value = '';
+      document.getElementById('phone').value = '';
+      document.getElementById('description').value = '';
+      document.getElementById('stretch-select').value = '';
+      document.getElementById('lat').value = '';
+      document.getElementById('lng').value = '';
+      selectedSev = null;
+      document.querySelectorAll('.sev-btn').forEach(b => b.classList.remove('active'));
+      loadRecent(); loadWardStats(); loadBreachCount();
+    } else {
+      showToast('❌ Error: ' + data.error, true);
+    }
+  }
+
+  loadStretches();
+  loadRecent();
+  loadWardStats();
+  loadBreachCount();
+</script>
+</body>
+</html>

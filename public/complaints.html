@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>All Complaints — BBMP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0d0d; --surface: #161616; --border: #2a2a2a;
+      --amber: #f59e0b; --red: #ef4444; --green: #22c55e;
+      --text: #e5e5e5; --muted: #6b7280;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+    nav { background:var(--surface); border-bottom:1px solid var(--border); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; position:sticky; top:0; z-index:100; }
+    .nav-logo { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--amber); letter-spacing:2px; }
+    .nav-links { display:flex; gap:1.5rem; }
+    .nav-links a { color:var(--muted); text-decoration:none; font-size:0.85rem; font-family:'DM Mono',monospace; letter-spacing:1px; transition:color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--amber); }
+    .container { max-width:1200px; margin:0 auto; padding:2rem; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--amber); letter-spacing:3px; margin-bottom:0.3rem; }
+    .page-sub { color:var(--muted); font-family:'DM Mono',monospace; font-size:0.8rem; margin-bottom:1.5rem; }
+
+    /* FILTERS */
+    .filters { display:flex; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap; }
+    .filter-btn {
+      padding:0.4rem 1rem; border-radius:3px; border:1px solid var(--border);
+      background:#1a1a1a; color:var(--muted); cursor:pointer;
+      font-family:'DM Mono',monospace; font-size:0.75rem; letter-spacing:1px;
+      transition:all 0.15s;
+    }
+    .filter-btn:hover { border-color:var(--amber); color:var(--amber); }
+    .filter-btn.active { background:var(--amber); border-color:var(--amber); color:#000; font-weight:bold; }
+
+    /* TABLE */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:0.83rem; }
+    thead { background:#111; }
+    th { font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:1px; color:var(--muted); padding:0.75rem 1rem; text-align:left; border-bottom:1px solid var(--border); }
+    td { padding:0.75rem 1rem; border-bottom:1px solid #1e1e1e; vertical-align:middle; }
+    tr:hover td { background:#1a1a1a; }
+
+    .badge { display:inline-block; padding:0.2rem 0.5rem; border-radius:2px; font-size:0.7rem; font-family:'DM Mono',monospace; letter-spacing:0.5px; }
+    .badge-open { background:rgba(245,158,11,0.15); color:var(--amber); }
+    .badge-assigned { background:rgba(59,130,246,0.15); color:#60a5fa; }
+    .badge-in_progress { background:rgba(139,92,246,0.15); color:#a78bfa; }
+    .badge-resolved { background:rgba(34,197,94,0.15); color:var(--green); }
+
+    .sev-bar { display:flex; align-items:center; gap:6px; }
+    .sev-fill { height:6px; border-radius:3px; }
+    .sev-1 { background:#22c55e; } .sev-2 { background:#84cc16; }
+    .sev-3 { background:#f59e0b; } .sev-4 { background:#f97316; }
+    .sev-5 { background:#ef4444; }
+
+    .repeat-tag { background:rgba(239,68,68,0.15); color:var(--red); font-size:0.65rem; padding:0.1rem 0.3rem; border-radius:2px; font-family:'DM Mono',monospace; margin-left:4px; }
+    .coord { font-family:'DM Mono',monospace; font-size:0.72rem; color:var(--muted); }
+
+    /* STATUS SELECT */
+    .status-select {
+      background:#1f1f1f; border:1px solid var(--border); color:var(--text);
+      padding:0.25rem 0.5rem; border-radius:3px; font-size:0.75rem;
+      font-family:'DM Mono',monospace; cursor:pointer;
+    }
+    .status-select:focus { outline:none; border-color:var(--amber); }
+
+    .empty { text-align:center; padding:3rem; color:var(--muted); font-family:'DM Mono',monospace; }
+
+    .toast { position:fixed; bottom:2rem; right:2rem; background:var(--surface); border:1px solid var(--green); color:var(--green); padding:1rem 1.5rem; border-radius:4px; font-family:'DM Mono',monospace; font-size:0.85rem; display:none; z-index:999; }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">⚠ POTHOLE WATCH</div>
+  <div class="nav-links">
+    <a href="index.html">REPORT</a>
+    <a href="complaints.html" class="active">COMPLAINTS</a>
+    <a href="dashboard.html">DASHBOARD</a>
+    <a href="login.html" style="border:1px solid var(--amber); padding:0.2rem 0.5rem; border-radius:2px; margin-left:1rem;">CONTRACTOR LOGIN</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-title">ALL COMPLAINTS</div>
+  <div class="page-sub">// Live complaint registry — click status to update</div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all', this)">ALL</button>
+    <button class="filter-btn" onclick="setFilter('assigned', this)">ASSIGNED</button>
+    <button class="filter-btn" onclick="setFilter('in_progress', this)">IN PROGRESS</button>
+    <button class="filter-btn" onclick="setFilter('resolved', this)">RESOLVED</button>
+    <button class="filter-btn" onclick="setFilter('repeat', this)">⚠ REPEAT</button>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>CITIZEN</th>
+            <th>STRETCH / WARD</th>
+            <th>LOCATION</th>
+            <th>SEV</th>
+            <th>CONTRACTOR</th>
+            <th>SLA DEADLINE</th>
+            <th>STATUS</th>
+            <th>FILED</th>
+          </tr>
+        </thead>
+        <tbody id="complaints-tbody">
+          <tr><td colspan="9" class="empty">Loading complaints...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  let allComplaints = [];
+  let currentFilter = 'all';
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 2500);
+  }
+
+  function setFilter(f, btn) {
+    currentFilter = f;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    renderTable();
+  }
+
+  function formatDate(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'2-digit' });
+  }
+
+  function isSLABreached(deadline, status) {
+    if (!deadline || status === 'resolved') return false;
+    return new Date() > new Date(deadline);
+  }
+
+  async function updateStatus(id, newStatus) {
+    await fetch(`/api/complaints/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    showToast(`✅ Complaint #${id} → ${newStatus}`);
+    loadComplaints();
+  }
+
+  function renderTable() {
+    let data = allComplaints;
+    if (currentFilter === 'repeat') data = data.filter(c => c.is_repeat);
+    else if (currentFilter !== 'all') data = data.filter(c => c.status === currentFilter);
+
+    const tbody = document.getElementById('complaints-tbody');
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="9" class="empty">No complaints found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = data.map(c => {
+      const breached = isSLABreached(c.sla_deadline, c.status);
+      return `
+        <tr style="${breached ? 'border-left: 2px solid var(--red)' : ''}">
+          <td style="font-family:'DM Mono',monospace; color:var(--muted)">#${c.complaint_id}</td>
+          <td>${c.citizen_name}</td>
+          <td>
+            ${c.stretch_name}
+            ${c.is_repeat ? '<span class="repeat-tag">REPEAT</span>' : ''}
+            <div style="font-size:0.72rem; color:var(--muted); margin-top:2px">${c.ward_name}</div>
+          </td>
+          <td class="coord">${parseFloat(c.complaint_lat).toFixed(4)}, ${parseFloat(c.complaint_lng).toFixed(4)}</td>
+          <td>
+            <div class="sev-bar">
+              <div class="sev-fill sev-${c.severity}" style="width:${c.severity * 16}px"></div>
+              <span>${c.severity}</span>
+            </div>
+          </td>
+          <td style="font-size:0.8rem">${c.contractor_name || '<span style="color:var(--muted)">Unassigned</span>'}</td>
+          <td style="${breached ? 'color:var(--red)' : ''}; font-size:0.78rem;">
+            ${formatDate(c.sla_deadline)}
+            ${breached ? '<div style="font-size:0.65rem; color:var(--red)">⚠ BREACHED</div>' : ''}
+          </td>
+          <td>
+            <span class="badge badge-${c.status.replace('_','')}">${c.status.toUpperCase()}</span>
+          </td>
+          <td style="font-size:0.78rem; color:var(--muted)">${formatDate(c.filed_at)}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function loadComplaints() {
+    const res = await fetch('/api/complaints');
+    allComplaints = await res.json();
+    renderTable();
+  }
+
+  loadComplaints();
+</script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contractor Panel — BBMP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0d0d0d; --surface: #161616; --border: #2a2a2a;
+      --amber: #f59e0b; --red: #ef4444; --green: #22c55e;
+      --text: #e5e5e5; --muted: #6b7280;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+    nav { background:var(--surface); border-bottom:1px solid var(--border); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; position:sticky; top:0; z-index:100; }
+    .nav-logo { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--amber); letter-spacing:2px; }
+    .nav-user { display:flex; align-items:center; gap:1rem; font-family:'DM Mono',monospace; font-size:0.8rem; }
+    .logout-btn { color:var(--red); cursor:pointer; text-decoration:underline; }
+
+    .container { max-width:1200px; margin:0 auto; padding:2rem; }
+    .header { margin-bottom:2rem; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; color:var(--amber); letter-spacing:3px; line-height:1; }
+    .page-sub { color:var(--muted); font-family:'DM Mono',monospace; font-size:0.85rem; margin-top:0.5rem; }
+
+    /* ALERTS */
+    .alerts { margin-bottom:2rem; display:flex; flex-direction:column; gap:0.75rem; }
+    .alert { padding:1rem 1.5rem; border-radius:4px; font-family:'DM Mono',monospace; font-size:0.85rem; display:flex; align-items:center; justify-content:space-between; border:1px solid transparent; }
+    .alert-repeat { background:rgba(239,68,68,0.1); border-color:var(--red); color:var(--red); }
+    .alert-breach { background:rgba(245,158,11,0.1); border-color:var(--amber); color:var(--amber); }
+
+    /* TABLE */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:4px; overflow:hidden; }
+    .card-header { padding:1rem 1.5rem; border-bottom:1px solid var(--border); font-family:'Bebas Neue',sans-serif; letter-spacing:2px; color:var(--muted); }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    th { font-family:'DM Mono',monospace; font-size:0.75rem; color:var(--muted); padding:1rem; text-align:left; border-bottom:1px solid var(--border); }
+    td { padding:1rem; border-bottom:1px solid #1e1e1e; }
+    
+    .status-select {
+      background:#1f1f1f; border:1px solid var(--border); color:var(--text);
+      padding:0.4rem 0.6rem; border-radius:3px; font-size:0.8rem;
+      font-family:'DM Mono',monospace; cursor:pointer;
+    }
+    .status-select:focus { outline:none; border-color:var(--amber); }
+
+    .badge { display:inline-block; padding:0.25rem 0.6rem; border-radius:2px; font-size:0.75rem; font-family:'DM Mono',monospace; }
+    .badge-high { background:rgba(239,68,68,0.15); color:var(--red); }
+    
+    .empty { text-align:center; padding:4rem; color:var(--muted); font-family:'DM Mono',monospace; }
+    
+    .toast { position:fixed; bottom:2rem; right:2rem; background:var(--surface); border:1px solid var(--green); color:var(--green); padding:1rem 1.5rem; border-radius:4px; font-family:'DM Mono',monospace; display:none; }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">⚠ POTHOLE WATCH</div>
+  <div class="nav-user">
+    <span id="contractor-name">Contractor Name</span>
+    <span class="logout-btn" onclick="logout()">LOGOUT</span>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <div class="page-title">MY ASSIGNMENTS</div>
+    <div class="page-sub">// Work orders and SLA tracking</div>
+  </div>
+
+  <div class="alerts" id="alerts-container"></div>
+
+  <div class="card" style="margin-bottom:2rem;">
+    <div class="card-header">ACTIVE ASSIGNMENTS</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>STRETCH / WARD</th>
+            <th>SEV</th>
+            <th>SLA DEADLINE</th>
+            <th>STATUS</th>
+            <th>FILED AT</th>
+          </tr>
+        </thead>
+        <tbody id="complaints-tbody">
+          <tr><td colspan="6" class="empty">Loading active assignments...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" style="color:var(--green)">RESOLVED HISTORY</div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>STRETCH / WARD</th>
+            <th>SEV</th>
+            <th>SLA DEADLINE</th>
+            <th>FILED AT</th>
+            <th>STATUS</th>
+          </tr>
+        </thead>
+        <tbody id="resolved-tbody">
+          <tr><td colspan="6" class="empty">No resolved complaints yet.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  const contractor = JSON.parse(localStorage.getItem('contractor'));
+  if (!contractor) window.location.href = 'login.html';
+  
+  document.getElementById('contractor-name').textContent = contractor.contractor_name.toUpperCase();
+
+  function logout() {
+    localStorage.removeItem('contractor');
+    window.location.href = 'login.html';
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.style.display = 'block';
+    setTimeout(() => t.style.display = 'none', 3000);
+  }
+
+  async function updateStatus(id, newStatus) {
+    await fetch(`/api/complaints/${id}/status`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    showToast(`✅ Status updated for #${id}`);
+    loadData();
+  }
+
+  function formatDate(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleDateString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  }
+
+  async function loadData() {
+    const cRes = await fetch(`/api/contractor/complaints/${contractor.contractor_id}`);
+    const complaints = await cRes.json();
+    
+    const aRes = await fetch(`/api/contractor/alerts/${contractor.contractor_id}`);
+    const alerts = await aRes.json();
+
+    renderAlerts(alerts);
+    
+    const active = complaints.filter(c => c.status !== 'resolved');
+    const resolved = complaints.filter(c => c.status === 'resolved');
+
+    renderActiveTable(active);
+    renderResolvedTable(resolved);
+  }
+
+  function renderAlerts(data) {
+    const container = document.getElementById('alerts-container');
+    container.innerHTML = '';
+    
+    data.repeats.forEach(r => {
+      container.innerHTML += `
+        <div class="alert alert-repeat">
+          <span>⚠ REPEAT MESSAGE: Multiple reports on <strong>${r.stretch_name}</strong> (ID: #${r.complaint_id})</span>
+          <span style="font-size:0.7rem">ACTION REQUIRED</span>
+        </div>
+      `;
+    });
+
+    data.breaches.forEach(b => {
+      container.innerHTML += `
+        <div class="alert alert-breach">
+          <span>⏰ SLA BREACH: Deadline missed for <strong>${b.stretch_name}</strong> (#${b.complaint_id})</span>
+          <span style="font-size:0.7rem">OVERDUE</span>
+        </div>
+      `;
+    });
+  }
+
+  function renderActiveTable(data) {
+    const tbody = document.getElementById('complaints-tbody');
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty">No active assignments found.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = data.map(c => {
+      const isBreached = new Date(c.sla_deadline) < new Date() && c.status !== 'resolved';
+      return `
+        <tr>
+          <td style="font-family:'DM Mono',monospace; color:var(--muted)">#${c.complaint_id}</td>
+          <td>
+            <div style="font-weight:600">${c.stretch_name}</div>
+            <div style="font-size:0.75rem; color:var(--muted)">${c.ward_name}</div>
+          </td>
+          <td><span class="badge ${c.severity >= 4 ? 'badge-high' : ''}">${c.severity}</span></td>
+          <td style="font-family:'DM Mono',monospace; color:${isBreached ? 'var(--red)' : 'var(--text)'}">
+            ${formatDate(c.sla_deadline)}
+            ${isBreached ? '<div style="font-size:0.6rem">⚠ BREACHED</div>' : ''}
+          </td>
+          <td>
+            <select class="status-select" onchange="updateStatus(${c.complaint_id}, this.value)">
+              <option value="assigned" ${c.status==='assigned'?'selected':''}>ASSIGNED</option>
+              <option value="in_progress" ${c.status==='in_progress'?'selected':''}>IN PROGRESS</option>
+              <option value="resolved" ${c.status==='resolved'?'selected':''}>RESOLVED</option>
+            </select>
+          </td>
+          <td style="font-size:0.8rem; color:var(--muted)">${formatDate(c.filed_at)}</td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  function renderResolvedTable(data) {
+    const tbody = document.getElementById('resolved-tbody');
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty">No resolved complaints.</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = data.map(c => `
+      <tr>
+        <td style="font-family:'DM Mono',monospace; color:var(--muted)">#${c.complaint_id}</td>
+        <td>
+          <div style="font-weight:600">${c.stretch_name}</div>
+          <div style="font-size:0.75rem; color:var(--muted)">${c.ward_name}</div>
+        </td>
+        <td><span class="badge">${c.severity}</span></td>
+        <td style="font-family:'DM Mono',monospace; color:var(--muted)">${formatDate(c.sla_deadline)}</td>
+        <td style="font-size:0.8rem; color:var(--muted)">${formatDate(c.filed_at)}</td>
+        <td><span class="badge" style="background:rgba(34,197,94,0.15); color:var(--green)">RESOLVED</span></td>
+      </tr>
+    `).join('');
+  }
+
+  loadData();
+</script>
+
+</body>
+</html>

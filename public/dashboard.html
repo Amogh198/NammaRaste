@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — BBMP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:#0d0d0d; --surface:#161616; --border:#2a2a2a;
+      --amber:#f59e0b; --red:#ef4444; --green:#22c55e;
+      --text:#e5e5e5; --muted:#6b7280;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; }
+    nav { background:var(--surface); border-bottom:1px solid var(--border); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:60px; position:sticky; top:0; z-index:100; }
+    .nav-logo { font-family:'Bebas Neue',sans-serif; font-size:1.4rem; color:var(--amber); letter-spacing:2px; }
+    .nav-links { display:flex; gap:1.5rem; }
+    .nav-links a { color:var(--muted); text-decoration:none; font-size:0.85rem; font-family:'DM Mono',monospace; letter-spacing:1px; transition:color 0.2s; }
+    .nav-links a:hover, .nav-links a.active { color:var(--amber); }
+    .container { max-width:1200px; margin:0 auto; padding:2rem; }
+    .page-title { font-family:'Bebas Neue',sans-serif; font-size:2rem; color:var(--amber); letter-spacing:3px; margin-bottom:0.3rem; }
+    .page-sub { color:var(--muted); font-family:'DM Mono',monospace; font-size:0.8rem; margin-bottom:1.5rem; }
+    .section-title { font-family:'Bebas Neue',sans-serif; font-size:1.3rem; color:var(--amber); letter-spacing:2px; margin:2rem 0 1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border); }
+
+    /* KPI CARDS */
+    .kpi-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(180px,1fr)); gap:1rem; margin-bottom:2rem; }
+    .kpi { background:var(--surface); border:1px solid var(--border); border-radius:4px; padding:1.2rem 1.5rem; }
+    .kpi-val { font-family:'Bebas Neue',sans-serif; font-size:2.5rem; color:var(--amber); line-height:1; }
+    .kpi-label { font-family:'DM Mono',monospace; font-size:0.7rem; color:var(--muted); letter-spacing:1px; margin-top:0.3rem; }
+    .kpi.danger .kpi-val { color:var(--red); }
+    .kpi.good .kpi-val { color:var(--green); }
+
+    /* CONTRACTOR TABLE */
+    .card { background:var(--surface); border:1px solid var(--border); border-radius:4px; overflow:hidden; margin-bottom:2rem; }
+    .table-wrap { overflow-x:auto; }
+    table { width:100%; border-collapse:collapse; font-size:0.83rem; }
+    thead { background:#111; }
+    th { font-family:'DM Mono',monospace; font-size:0.7rem; letter-spacing:1px; color:var(--muted); padding:0.75rem 1rem; text-align:left; border-bottom:1px solid var(--border); }
+    td { padding:0.75rem 1rem; border-bottom:1px solid #1e1e1e; vertical-align:middle; }
+    tr:hover td { background:#1a1a1a; }
+
+    /* RATING BAR */
+    .perf-bar-wrap { display:flex; align-items:center; gap:8px; }
+    .perf-bar { height:8px; border-radius:4px; transition:width 0.5s; }
+    .bar-good { background:var(--green); }
+    .bar-warn { background:var(--amber); }
+    .bar-bad { background:var(--red); }
+
+    .breach-row { background:rgba(239,68,68,0.05) !important; }
+    .breach-row td { border-left:2px solid var(--red); }
+
+    .badge { display:inline-block; padding:0.2rem 0.5rem; border-radius:2px; font-size:0.7rem; font-family:'DM Mono',monospace; }
+    .badge-breach { background:rgba(239,68,68,0.15); color:var(--red); }
+    .badge-ok { background:rgba(34,197,94,0.15); color:var(--green); }
+
+    .sev-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+    .sev-1{background:#22c55e} .sev-2{background:#84cc16} .sev-3{background:#f59e0b} .sev-4{background:#f97316} .sev-5{background:#ef4444}
+
+    .empty { text-align:center; padding:3rem; color:var(--muted); font-family:'DM Mono',monospace; }
+
+    /* REPEAT SECTION */
+    .repeat-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1rem; }
+    .repeat-card {
+      background:var(--surface); border:1px solid var(--red);
+      border-radius:4px; padding:1rem;
+    }
+    .repeat-id { font-family:'DM Mono',monospace; font-size:0.75rem; color:var(--red); margin-bottom:0.4rem; }
+    .repeat-stretch { font-weight:600; font-size:0.9rem; margin-bottom:0.2rem; }
+    .repeat-meta { font-size:0.78rem; color:var(--muted); }
+  </style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo">⚠ POTHOLE WATCH</div>
+  <div class="nav-links">
+    <a href="index.html">REPORT</a>
+    <a href="complaints.html">COMPLAINTS</a>
+    <a href="dashboard.html" class="active">DASHBOARD</a>
+    <a href="login.html" style="border:1px solid var(--amber); padding:0.2rem 0.5rem; border-radius:2px; margin-left:1rem;">CONTRACTOR LOGIN</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="page-title">CONTRACTOR DASHBOARD</div>
+  <div class="page-sub">// Performance metrics, SLA breaches & repeat complaint clusters</div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi"><div class="kpi-val" id="kpi-total">—</div><div class="kpi-label">TOTAL ASSIGNED</div></div>
+    <div class="kpi danger"><div class="kpi-val" id="kpi-breaches">—</div><div class="kpi-label">SLA BREACHES</div></div>
+    <div class="kpi good"><div class="kpi-val" id="kpi-resolved">—</div><div class="kpi-label">RESOLVED</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-avg">—</div><div class="kpi-label">AVG RESOLUTION (HRS)</div></div>
+  </div>
+
+  <!-- CONTRACTOR PERFORMANCE -->
+  <div class="section-title">CONTRACTOR PERFORMANCE</div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>CONTRACTOR</th>
+            <th>ASSIGNED</th>
+            <th>RESOLVED</th>
+            <th>SLA BREACHES</th>
+            <th>AVG RESOLUTION</th>
+            <th>PERFORMANCE</th>
+          </tr>
+        </thead>
+        <tbody id="perf-tbody">
+          <tr><td colspan="6" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SLA BREACH LOG -->
+  <div class="section-title">⚠ SLA BREACH LOG</div>
+  <div class="card">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>BREACH #</th>
+            <th>COMPLAINT</th>
+            <th>STRETCH</th>
+            <th>WARD</th>
+            <th>CONTRACTOR</th>
+            <th>SEV</th>
+            <th>DEADLINE MISSED</th>
+            <th>DETECTED AT</th>
+          </tr>
+        </thead>
+        <tbody id="breach-tbody">
+          <tr><td colspan="8" class="empty">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- REPEAT COMPLAINTS -->
+  <div class="section-title">🔁 REPEAT COMPLAINTS</div>
+  <div id="repeat-section">
+    <div class="empty" style="padding:2rem; border:1px solid var(--border); border-radius:4px;">Loading...</div>
+  </div>
+
+</div>
+
+<script>
+  function formatDate(d) {
+    if (!d) return '—';
+    return new Date(d).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'2-digit', hour:'2-digit', minute:'2-digit' });
+  }
+
+  async function loadPerformance() {
+    const res = await fetch('/api/dashboard');
+    const data = await res.json();
+
+    let totalAssigned = 0, totalBreaches = 0, totalResolved = 0, totalHours = 0, resolvedCount = 0;
+    data.forEach(d => {
+      totalAssigned += d.total_assigned || 0;
+      totalBreaches += d.sla_breaches || 0;
+    });
+
+    document.getElementById('kpi-total').textContent = totalAssigned;
+    document.getElementById('kpi-breaches').textContent = totalBreaches;
+
+    const tbody = document.getElementById('perf-tbody');
+    tbody.innerHTML = data.map(d => {
+      const breachRate = d.total_assigned > 0 ? (d.sla_breaches / d.total_assigned) : 0;
+      const perfScore = Math.max(0, 100 - breachRate * 100);
+      const barClass = perfScore >= 80 ? 'bar-good' : perfScore >= 50 ? 'bar-warn' : 'bar-bad';
+      const isBreached = d.sla_breaches > 0;
+
+      return `
+        <tr class="${isBreached ? 'breach-row' : ''}">
+          <td style="font-weight:600">${d.contractor_name}</td>
+          <td>${d.total_assigned}</td>
+          <td style="color:var(--green)">${d.total_assigned - (d.sla_breaches || 0)}</td>
+          <td>
+            ${d.sla_breaches > 0
+              ? `<span class="badge badge-breach">${d.sla_breaches} BREACH${d.sla_breaches > 1 ? 'ES' : ''}</span>`
+              : `<span class="badge badge-ok">CLEAN</span>`}
+          </td>
+          <td style="font-family:'DM Mono',monospace; font-size:0.8rem">
+            ${d.avg_resolution_hours !== null ? parseFloat(d.avg_resolution_hours).toFixed(1) + 'h' : '—'}
+          </td>
+          <td>
+            <div class="perf-bar-wrap">
+              <div class="perf-bar ${barClass}" style="width:${perfScore}px; max-width:120px;"></div>
+              <span style="font-size:0.78rem; color:var(--muted)">${perfScore.toFixed(0)}%</span>
+            </div>
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  async function loadBreaches() {
+    const res = await fetch('/api/breaches');
+    const data = await res.json();
+
+    document.getElementById('kpi-breaches').textContent = data.length;
+
+    const tbody = document.getElementById('breach-tbody');
+    if (data.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" class="empty" style="color:var(--green)">✅ No SLA breaches detected</td></tr>`;
+      return;
+    }
+    tbody.innerHTML = data.map(b => `
+      <tr class="breach-row">
+        <td style="font-family:'DM Mono',monospace; color:var(--red)">#${b.breach_id}</td>
+        <td style="font-family:'DM Mono',monospace; color:var(--muted)">#${b.complaint_id}</td>
+        <td>${b.stretch_name}</td>
+        <td>${b.ward_name}</td>
+        <td>${b.contractor_name}</td>
+        <td><span class="sev-dot sev-${b.severity}"></span>${b.severity}</td>
+        <td style="color:var(--red); font-size:0.78rem">${formatDate(b.sla_deadline)}</td>
+        <td style="font-size:0.78rem; color:var(--muted)">${formatDate(b.breach_detected_at)}</td>
+      </tr>
+    `).join('');
+  }
+
+  async function loadRepeats() {
+    const res = await fetch('/api/repeats');
+    const data = await res.json();
+    const section = document.getElementById('repeat-section');
+
+    if (data.length === 0) {
+      section.innerHTML = `<div class="empty" style="padding:2rem; border:1px solid var(--border); border-radius:4px; color:var(--green)">✅ No repeat complaints on record</div>`;
+      return;
+    }
+    section.innerHTML = `<div class="repeat-grid">${data.map(r => `
+      <div class="repeat-card">
+        <div class="repeat-id">COMPLAINT #${r.complaint_id} — ${r.ward_name}</div>
+        <div class="repeat-stretch">${r.stretch_name}</div>
+        <div class="repeat-meta">Filed by: ${r.citizen_name}</div>
+        <div class="repeat-meta">Severity: ${r.severity} | Status: ${r.status}</div>
+        <div class="repeat-meta" style="margin-top:0.3rem; color:var(--red); font-size:0.72rem">⚠ Repeat complaint on this stretch</div>
+      </div>
+    `).join('')}</div>`;
+  }
+
+  async function loadKPIs() {
+    const res = await fetch('/api/complaints');
+    const data = await res.json();
+    const resolved = data.filter(c => c.status === 'resolved').length;
+    document.getElementById('kpi-resolved').textContent = resolved;
+
+    const withTime = data.filter(c => c.resolved_at && c.filed_at);
+    if (withTime.length > 0) {
+      const avg = withTime.reduce((sum, c) => {
+        return sum + (new Date(c.resolved_at) - new Date(c.filed_at)) / 3600000;
+      }, 0) / withTime.length;
+      document.getElementById('kpi-avg').textContent = avg.toFixed(1);
+    } else {
+      document.getElementById('kpi-avg').textContent = '—';
+    }
+  }
+
+  loadPerformance();
+  loadBreaches();
+  loadRepeats();
+  loadKPIs();
+</script>
+</body>
+</html>
