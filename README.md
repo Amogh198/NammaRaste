@@ -4,7 +4,7 @@ An automated, role-separated municipal complaint management and repair tracking 
 
 ---
 
-## 🚀 Key Features
+##  Key Features
 
 *   **Role Separation:** 
     *   **Citizens:** Public access to submit complaints and view active/recent pothole logs without needing a login.
@@ -16,7 +16,7 @@ An automated, role-separated municipal complaint management and repair tracking 
 
 ---
 
-## 🛠️ Technology Stack
+##  Technology Stack
 
 *   **Frontend:** HTML5, CSS3 (Vanilla), JavaScript (ES6, Fetch API)
 *   **Backend:** Node.js, Express.js
@@ -24,7 +24,7 @@ An automated, role-separated municipal complaint management and repair tracking 
 
 ---
 
-## 📋 Prerequisites
+## Prerequisites
 
 Before running the application, make sure you have installed:
 *   [Node.js](https://nodejs.org/) (v16 or higher)
@@ -32,7 +32,7 @@ Before running the application, make sure you have installed:
 
 ---
 
-## ⚙️ Setup Instructions
+## Setup Instructions
 
 ### 1. Database Setup
 Log into your MySQL terminal (or Workbench) and execute the following DDL script to create the database schema, tables, views, and triggers:
@@ -267,11 +267,11 @@ const db = mysql.createConnection({
 
 ---
 
-## 📁 Project Directory Structure
+## Project Directory Structure
 
 ```
 pothole-app/
-├── public/                 # Client-side web pages
+├── Frontend/                 # Client-side web pages
 │   ├── index.html          # Citizen portal (landing page)
 │   ├── complaints.html     # Directory list of all complaints
 │   ├── dashboard.html      # Public real-time performance analytics
